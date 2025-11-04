@@ -6,9 +6,10 @@ package com.example.flappy;
 public final class Constants {
     private Constants() {} // Prevent instantiation
 
-    // Window dimensions (full screen desktop)
-    public static final int WINDOW_WIDTH = 1280;
-    public static final int WINDOW_HEIGHT = 720;
+    // Window dimensions - will be set dynamically to screen size
+    // These are fallback/default values
+    public static int WINDOW_WIDTH = 1280;
+    public static int WINDOW_HEIGHT = 720;
 
     // Game loop
     public static final int TARGET_FPS = 60;

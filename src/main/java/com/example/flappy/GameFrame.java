@@ -18,16 +18,19 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         
-        // Use full screen or specified window size
+        // Get screen size and set window to fit screen
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         
-        // Center window on screen
-        int x = (screenSize.width - Constants.WINDOW_WIDTH) / 2;
-        int y = (screenSize.height - Constants.WINDOW_HEIGHT) / 2;
-        setLocation(x, y);
+        // Update Constants with actual screen dimensions
+        Constants.WINDOW_WIDTH = screenSize.width;
+        Constants.WINDOW_HEIGHT = screenSize.height;
+        
+        setSize(screenSize.width, screenSize.height);
+        
+        // Position at top-left corner (0, 0)
+        setLocation(0, 0);
 
-        // Initialize game panel
+        // Initialize game panel (after Constants are set)
         gamePanel = new GamePanel();
         add(gamePanel);
 
