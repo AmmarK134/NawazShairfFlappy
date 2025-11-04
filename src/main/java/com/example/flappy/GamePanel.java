@@ -58,9 +58,8 @@ public class GamePanel extends JPanel {
         // Pre-load sounds
         SoundPlayer.loadSound("flap", "/sounds/flap.wav");
         SoundPlayer.loadSound("point", "/sounds/point.wav");
-        SoundPlayer.loadSound("hit", "/sounds/hit.wav");
+        SoundPlayer.loadSound("hitaudio", "/sounds/hitaudio.wav"); // Hit sound
         SoundPlayer.loadSound("die", "/sounds/die.wav");
-        SoundPlayer.loadSound("hitaudio", "/sounds/hitaudio.wav"); // Pipe collision sound
         SoundPlayer.loadSound("audiobackground", "/sounds/audiobackground.wav"); // Background music
     }
 
@@ -221,7 +220,7 @@ public class GamePanel extends JPanel {
         state = GameState.GAME_OVER;
         // Stop background music
         SoundPlayer.stopBackgroundMusic();
-        SoundPlayer.play("hit");
+        SoundPlayer.play("hitaudio");
         SoundPlayer.play("die");
         if (gameTimer != null) {
             gameTimer.stop();
