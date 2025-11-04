@@ -135,14 +135,25 @@ public class SelectionPanel extends JPanel {
                 g2d.fillOval(birdX - 10, birdY - 10, thumbnailSize + 20, thumbnailSize + 20);
             }
 
-            // Draw bird thumbnail maintaining aspect ratio
+            // Draw bird thumbnail maintaining aspect ratio - ensure all birds same max size
             if (birdSprites[i] != null) {
                 int spriteWidth = birdSprites[i].getWidth();
                 int spriteHeight = birdSprites[i].getHeight();
                 if (spriteWidth > 0 && spriteHeight > 0) {
-                    // Calculate height to maintain aspect ratio
-                    int thumbWidth = thumbnailSize;
-                    int thumbHeight = (int) ((float) spriteHeight / spriteWidth * thumbnailSize);
+                    // Calculate dimensions maintaining aspect ratio, but fit within thumbnailSize
+                    float aspectRatio = (float) spriteWidth / spriteHeight;
+                    int thumbWidth, thumbHeight;
+                    
+                    if (aspectRatio > 1.0f) {
+                        // Wider than tall
+                        thumbWidth = thumbnailSize;
+                        thumbHeight = (int) (thumbnailSize / aspectRatio);
+                    } else {
+                        // Taller than wide or square
+                        thumbHeight = thumbnailSize;
+                        thumbWidth = (int) (thumbnailSize * aspectRatio);
+                    }
+                    
                     // Center the thumbnail
                     int thumbX = birdX + (thumbnailSize - thumbWidth) / 2;
                     int thumbY = birdY + (thumbnailSize - thumbHeight) / 2;

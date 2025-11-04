@@ -70,7 +70,8 @@ public class PipeManager {
 
             // Bottom pipe
             int bottomPipeTop = gapY + gapHeight / 2;
-            int bottomPipeHeight = Constants.WINDOW_HEIGHT - Constants.GROUND_HEIGHT - bottomPipeTop;
+            int groundY = Constants.WINDOW_HEIGHT - Constants.GROUND_HEIGHT;
+            int bottomPipeHeight = groundY - bottomPipeTop;
             if (bottomPipeHeight > 0 && pipeBottom != null) {
                 g.drawImage(pipeBottom, x, bottomPipeTop, Constants.PIPE_WIDTH, bottomPipeHeight, null);
             }
@@ -79,24 +80,38 @@ public class PipeManager {
 
     /**
      * Check collision between bird and any pipe.
+     * Uses proper AABB (Axis-Aligned Bounding Box) collision with small tolerance.
      */
     public boolean checkCollision(Bird bird) {
         int birdX = bird.getX();
         int birdY = bird.getY();
         int birdWidth = bird.getWidth();
         int birdHeight = bird.getHeight();
+        
+        // Add small padding to collision box for more forgiving collisions
+        int padding = 5;
+        int birdLeft = birdX + padding;
+        int birdRight = birdX + birdWidth - padding;
+        int birdTop = birdY + padding;
+        int birdBottom = birdY + birdHeight - padding;
 
         for (Pipe pipe : pipes) {
             int pipeX = pipe.getX();
             int pipeWidth = pipe.getWidth();
 
-            // Check if bird is horizontally aligned with pipe
-            if (birdX + birdWidth > pipeX && birdX < pipeX + pipeWidth) {
+            // Check if bird is horizontally aligned with pipe (with padding)
+            if (birdRight > pipeX && birdLeft < pipeX + pipeWidth) {
                 int topPipeBottom = pipe.getTopPipeBottom();
                 int bottomPipeTop = pipe.getBottomPipeTop();
 
-                // Check collision with top or bottom pipe
-                if (birdY < topPipeBottom || birdY + birdHeight > bottomPipeTop) {
+                // Check collision with top pipe (bird overlaps with pipe)
+                if (birdBottom > 0 && birdTop < topPipeBottom) {
+                    return true;
+                }
+                
+                // Check collision with bottom pipe (bird overlaps with pipe)
+                int groundY = Constants.WINDOW_HEIGHT - Constants.GROUND_HEIGHT;
+                if (birdTop < groundY && birdBottom > bottomPipeTop) {
                     return true;
                 }
             }

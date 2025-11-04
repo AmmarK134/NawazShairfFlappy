@@ -192,8 +192,9 @@ public class GamePanel extends JPanel {
             return;
         }
 
-        // Check ground collision
-        if (bird.getY() + bird.getHeight() >= Constants.GROUND_Y) {
+        // Check ground collision (at the very bottom)
+        int groundY = Constants.WINDOW_HEIGHT - Constants.GROUND_HEIGHT;
+        if (bird.getY() + bird.getHeight() >= groundY) {
             gameOver();
             return;
         }
@@ -279,16 +280,17 @@ public class GamePanel extends JPanel {
             pipeManager.render(g2d);
         }
 
-        // Draw ground
+        // Draw ground at the very bottom
+        int groundY = Constants.WINDOW_HEIGHT - Constants.GROUND_HEIGHT;
         if (ground != null) {
             int groundWidth = ground.getWidth();
             int offset = (int) (System.currentTimeMillis() / 10) % groundWidth;
             for (int x = -offset; x < Constants.WINDOW_WIDTH; x += groundWidth) {
-                g2d.drawImage(ground, x, Constants.GROUND_Y, null);
+                g2d.drawImage(ground, x, groundY, null);
             }
         } else {
             g2d.setColor(new Color(139, 90, 43)); // Brown
-            g2d.fillRect(0, Constants.GROUND_Y, Constants.WINDOW_WIDTH, Constants.GROUND_HEIGHT);
+            g2d.fillRect(0, groundY, Constants.WINDOW_WIDTH, Constants.GROUND_HEIGHT);
         }
 
         // Draw bird

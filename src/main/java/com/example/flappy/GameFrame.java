@@ -16,26 +16,35 @@ public class GameFrame extends JFrame {
     public GameFrame() {
         setTitle("Flappy Bird (Pure Java)");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
+        setResizable(true); // Allow resizing for maximize
         
-        // Get screen size and set window to fit screen
+        // Maximize window (shows taskbar)
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        
+        // Get initial size estimate
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        
-        // Update Constants with actual screen dimensions
         Constants.WINDOW_WIDTH = screenSize.width;
         Constants.WINDOW_HEIGHT = screenSize.height;
-        
-        setSize(screenSize.width, screenSize.height);
-        
-        // Position at top-left corner (0, 0)
-        setLocation(0, 0);
 
-        // Initialize game panel (after Constants are set)
+        // Initialize game panel
         gamePanel = new GamePanel();
         add(gamePanel);
 
-        // Clean up timer on window close
+        // Window listener for both opening and closing
         addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+                // Update Constants with actual window dimensions (accounts for taskbar)
+                Dimension windowSize = getContentPane().getSize();
+                Constants.WINDOW_WIDTH = windowSize.width;
+                Constants.WINDOW_HEIGHT = windowSize.height;
+                // Force repaint with new dimensions
+                if (gamePanel != null) {
+                    gamePanel.revalidate();
+                    gamePanel.repaint();
+                }
+            }
+            
             @Override
             public void windowClosing(WindowEvent e) {
                 gamePanel.cleanup();
