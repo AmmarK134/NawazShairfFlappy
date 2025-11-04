@@ -13,10 +13,34 @@ public class Bird {
     private float velY;
     private BufferedImage sprite;
     private float rotation; // degrees
+    private int displayWidth;
+    private int displayHeight;
 
     public Bird(BufferedImage sprite) {
         this.sprite = sprite;
+        calculateDisplaySize();
         reset();
+    }
+
+    /**
+     * Calculate display size maintaining aspect ratio from sprite.
+     */
+    private void calculateDisplaySize() {
+        if (sprite != null) {
+            int spriteWidth = sprite.getWidth();
+            int spriteHeight = sprite.getHeight();
+            if (spriteWidth > 0 && spriteHeight > 0) {
+                // Calculate height to maintain aspect ratio
+                displayWidth = Constants.BIRD_DISPLAY_WIDTH;
+                displayHeight = (int) ((float) spriteHeight / spriteWidth * Constants.BIRD_DISPLAY_WIDTH);
+            } else {
+                displayWidth = Constants.BIRD_DISPLAY_WIDTH;
+                displayHeight = Constants.BIRD_DISPLAY_WIDTH;
+            }
+        } else {
+            displayWidth = Constants.BIRD_DISPLAY_WIDTH;
+            displayHeight = Constants.BIRD_DISPLAY_WIDTH;
+        }
     }
 
     /**
@@ -68,14 +92,15 @@ public class Bird {
         AffineTransform oldTransform = g.getTransform();
         
         // Translate to bird center, rotate, then translate back
-        int centerX = (int) x + Constants.BIRD_WIDTH / 2;
-        int centerY = (int) y + Constants.BIRD_HEIGHT / 2;
+        int centerX = (int) x + displayWidth / 2;
+        int centerY = (int) y + displayHeight / 2;
         
         g.translate(centerX, centerY);
         g.rotate(Math.toRadians(rotation));
         g.translate(-centerX, -centerY);
         
-        g.drawImage(sprite, (int) x, (int) y, Constants.BIRD_WIDTH, Constants.BIRD_HEIGHT, null);
+        // Draw maintaining aspect ratio
+        g.drawImage(sprite, (int) x, (int) y, displayWidth, displayHeight, null);
         
         g.setTransform(oldTransform);
     }
@@ -92,11 +117,11 @@ public class Bird {
     }
 
     public int getWidth() {
-        return Constants.BIRD_WIDTH;
+        return displayWidth;
     }
 
     public int getHeight() {
-        return Constants.BIRD_HEIGHT;
+        return displayHeight;
     }
 
     public float getVelY() {

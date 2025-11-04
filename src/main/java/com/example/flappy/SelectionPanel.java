@@ -121,25 +121,39 @@ public class SelectionPanel extends JPanel {
         int titleWidth = g2d.getFontMetrics().stringWidth(title);
         g2d.drawString(title, (Constants.WINDOW_WIDTH - titleWidth) / 2, 100);
 
-        // Draw bird options
-        int startX = Constants.WINDOW_WIDTH / 2 - (BIRD_COUNT * 80) / 2;
+        // Draw bird options (larger thumbnails for bigger screen)
+        int thumbnailSize = 150;
+        int spacing = 200;
+        int startX = Constants.WINDOW_WIDTH / 2 - (BIRD_COUNT * spacing) / 2;
         for (int i = 0; i < BIRD_COUNT; i++) {
-            int birdX = startX + i * 80;
-            int birdY = Constants.WINDOW_HEIGHT / 2 - 40;
+            int birdX = startX + i * spacing;
+            int birdY = Constants.WINDOW_HEIGHT / 2 - thumbnailSize / 2;
 
             // Highlight selected
             if (i == selectedIndex) {
                 g2d.setColor(new Color(255, 255, 0, 100));
-                g2d.fillOval(birdX - 5, birdY - 5, 70, 70);
+                g2d.fillOval(birdX - 10, birdY - 10, thumbnailSize + 20, thumbnailSize + 20);
             }
 
-            // Draw bird thumbnail
+            // Draw bird thumbnail maintaining aspect ratio
             if (birdSprites[i] != null) {
-                g2d.drawImage(birdSprites[i], birdX, birdY, 60, 60, null);
+                int spriteWidth = birdSprites[i].getWidth();
+                int spriteHeight = birdSprites[i].getHeight();
+                if (spriteWidth > 0 && spriteHeight > 0) {
+                    // Calculate height to maintain aspect ratio
+                    int thumbWidth = thumbnailSize;
+                    int thumbHeight = (int) ((float) spriteHeight / spriteWidth * thumbnailSize);
+                    // Center the thumbnail
+                    int thumbX = birdX + (thumbnailSize - thumbWidth) / 2;
+                    int thumbY = birdY + (thumbnailSize - thumbHeight) / 2;
+                    g2d.drawImage(birdSprites[i], thumbX, thumbY, thumbWidth, thumbHeight, null);
+                } else {
+                    g2d.drawImage(birdSprites[i], birdX, birdY, thumbnailSize, thumbnailSize, null);
+                }
             } else {
                 // Fallback colored rectangle
                 g2d.setColor(new Color(255, 165, 0));
-                g2d.fillRect(birdX, birdY, 60, 60);
+                g2d.fillRect(birdX, birdY, thumbnailSize, thumbnailSize);
             }
         }
 

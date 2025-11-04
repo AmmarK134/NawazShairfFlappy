@@ -17,10 +17,12 @@ public class GameFrame extends JFrame {
         setTitle("Flappy Bird (Pure Java)");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
-        setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-
-        // Center window on screen
+        
+        // Use full screen or specified window size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        
+        // Center window on screen
         int x = (screenSize.width - Constants.WINDOW_WIDTH) / 2;
         int y = (screenSize.height - Constants.WINDOW_HEIGHT) / 2;
         setLocation(x, y);
