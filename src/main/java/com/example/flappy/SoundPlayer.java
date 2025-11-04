@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public class SoundPlayer {
     private static final Map<String, Clip> soundCache = new HashMap<>();
+    private static Clip backgroundMusic = null;
     private static boolean soundsEnabled = true;
 
     /**
@@ -72,9 +73,42 @@ public class SoundPlayer {
     }
 
     /**
+     * Play background music that loops continuously.
+     */
+    public static void playBackgroundMusic(String name) {
+        if (!soundsEnabled) {
+            return;
+        }
+
+        // Stop any currently playing background music
+        stopBackgroundMusic();
+
+        // Load and play the background music
+        loadSound(name, "/sounds/" + name + ".wav");
+        backgroundMusic = soundCache.get(name);
+        
+        if (backgroundMusic != null) {
+            backgroundMusic.setFramePosition(0);
+            backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+        }
+    }
+
+    /**
+     * Stop background music.
+     */
+    public static void stopBackgroundMusic() {
+        if (backgroundMusic != null && backgroundMusic.isRunning()) {
+            backgroundMusic.stop();
+        }
+    }
+
+    /**
      * Clean up all loaded clips.
      */
     public static void cleanup() {
+        stopBackgroundMusic();
+        backgroundMusic = null;
+        
         for (Clip clip : soundCache.values()) {
             if (clip != null && clip.isOpen()) {
                 clip.close();

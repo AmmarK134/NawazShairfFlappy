@@ -29,6 +29,8 @@ public class SelectionPanel extends JPanel {
         setBackground(Color.CYAN);
         setPreferredSize(new Dimension(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
         setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        setFocusable(true);
+        requestFocusInWindow();
         loadAssets();
         setupMouseListener();
     }
@@ -45,35 +47,12 @@ public class SelectionPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int x = e.getX();
-                int y = e.getY();
-
-                // Check bird selection - use same coordinates as rendering
-                int thumbnailSize = 150;
-                int bird3Size = 180; // Bigger for bird3
-                int spacing = 200;
-                int startX = Constants.WINDOW_WIDTH / 2 - (BIRD_COUNT * spacing) / 2;
-                
-                for (int i = 0; i < BIRD_COUNT; i++) {
-                    // Use larger size for bird3 (same as rendering)
-                    int currentSize = (i == 2) ? bird3Size : thumbnailSize;
-                    int birdX = startX + i * spacing;
-                    int birdY = Constants.WINDOW_HEIGHT / 2 - currentSize / 2;
-                    
-                    // Check if click is within bird bounds
-                    if (x >= birdX && x < birdX + currentSize && y >= birdY && y < birdY + currentSize) {
-                        selectedIndex = i;
-                        repaint();
-                        return;
-                    }
-                }
-
-                // Check start button
-                if (selectedIndex >= 0 && isStartButtonHover(e.getX(), e.getY())) {
-                    if (onStartCallback != null) {
-                        onStartCallback.run();
-                    }
-                }
+                handleMouseClick(e.getX(), e.getY());
+            }
+            
+            @Override
+            public void mousePressed(MouseEvent e) {
+                handleMouseClick(e.getX(), e.getY());
             }
         });
 
@@ -87,6 +66,37 @@ public class SelectionPanel extends JPanel {
                 }
             }
         });
+    }
+    
+    private void handleMouseClick(int x, int y) {
+        // Check bird selection - use same coordinates as rendering
+        int thumbnailSize = 150;
+        int bird3Size = 180; // Bigger for bird3
+        int spacing = 200;
+        int startX = Constants.WINDOW_WIDTH / 2 - (BIRD_COUNT * spacing) / 2;
+        
+        for (int i = 0; i < BIRD_COUNT; i++) {
+            // Use larger size for bird3 (same as rendering)
+            int currentSize = (i == 2) ? bird3Size : thumbnailSize;
+            int birdX = startX + i * spacing;
+            int birdY = Constants.WINDOW_HEIGHT / 2 - currentSize / 2;
+            
+            // Check if click is within bird bounds (with some padding for easier clicking)
+            int padding = 10;
+            if (x >= birdX - padding && x < birdX + currentSize + padding && 
+                y >= birdY - padding && y < birdY + currentSize + padding) {
+                selectedIndex = i;
+                repaint();
+                return;
+            }
+        }
+
+        // Check start button
+        if (selectedIndex >= 0 && isStartButtonHover(x, y)) {
+            if (onStartCallback != null) {
+                onStartCallback.run();
+            }
+        }
     }
 
     private boolean isStartButtonHover(int x, int y) {

@@ -60,6 +60,8 @@ public class GamePanel extends JPanel {
         SoundPlayer.loadSound("point", "/sounds/point.wav");
         SoundPlayer.loadSound("hit", "/sounds/hit.wav");
         SoundPlayer.loadSound("die", "/sounds/die.wav");
+        SoundPlayer.loadSound("hitaudio", "/sounds/hitaudio.wav"); // Pipe collision sound
+        SoundPlayer.loadSound("audiobackground", "/sounds/audiobackground.wav"); // Background music
     }
 
     private void setupSelectionPanel() {
@@ -78,6 +80,9 @@ public class GamePanel extends JPanel {
         state = GameState.PLAYING;
         score = 0;
         pipeManager.reset();
+        
+        // Start background music
+        SoundPlayer.playBackgroundMusic("audiobackground");
         
         // Start game loop
         gameTimer = new Timer(Constants.TIMER_DELAY_MS, e -> {
@@ -123,6 +128,10 @@ public class GamePanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                // Only handle clicks if not in SELECT state (SelectionPanel handles that)
+                if (state == GameState.SELECT) {
+                    return; // Let SelectionPanel handle it
+                }
                 if (state == GameState.PLAYING || state == GameState.PAUSED) {
                     flapBird();
                     if (state == GameState.PAUSED) {
@@ -188,6 +197,9 @@ public class GamePanel extends JPanel {
 
         // Check collisions
         if (pipeManager.checkCollision(bird)) {
+            // Stop background music and play hit sound when hitting a pipe
+            SoundPlayer.stopBackgroundMusic();
+            SoundPlayer.play("hitaudio");
             gameOver();
             return;
         }
@@ -207,6 +219,8 @@ public class GamePanel extends JPanel {
 
     private void gameOver() {
         state = GameState.GAME_OVER;
+        // Stop background music
+        SoundPlayer.stopBackgroundMusic();
         SoundPlayer.play("hit");
         SoundPlayer.play("die");
         if (gameTimer != null) {
@@ -220,6 +234,8 @@ public class GamePanel extends JPanel {
         pipeManager.reset();
         score = 0;
         state = GameState.PLAYING;
+        // Restart background music
+        SoundPlayer.playBackgroundMusic("audiobackground");
         if (gameTimer != null) {
             gameTimer.start();
         }

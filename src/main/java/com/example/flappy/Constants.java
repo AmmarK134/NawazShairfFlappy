@@ -24,13 +24,14 @@ public final class Constants {
     public static final int BIRD_START_X = WINDOW_WIDTH / 4;
     public static final int BIRD_START_Y = WINDOW_HEIGHT / 2;
 
-    // Pipes
-    public static final int PIPE_WIDTH = 120; // Thicker pipes
-    public static final int PIPE_GAP_HEIGHT = 250; // Larger gap for bigger screen
+    // Pipes - Made easier: wider pipes with larger gaps, varied vertical positions
+    public static final int PIPE_WIDTH = 180; // Much wider pipes (easier to see and avoid)
+    public static final int PIPE_GAP_HEIGHT = 350; // Larger gap (less tall pipes, easier to pass)
     public static final int PIPE_SPEED = 5; // Slightly faster for bigger screen
     public static final int PIPE_SPAWN_INTERVAL = 90; // frames between spawns
-    public static final int PIPE_MIN_GAP_Y = 200;
-    public static final int PIPE_MAX_GAP_Y = WINDOW_HEIGHT - 300;
+    // Increased range for more vertical variation (high, middle, low gaps)
+    public static final int PIPE_MIN_GAP_Y = 150; // Can spawn high up
+    public static final int PIPE_MAX_GAP_Y = WINDOW_HEIGHT - 250; // Can spawn low down
 
     // Ground
     public static final int GROUND_HEIGHT = 150;

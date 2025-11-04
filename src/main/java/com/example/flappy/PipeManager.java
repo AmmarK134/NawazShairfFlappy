@@ -46,10 +46,32 @@ public class PipeManager {
 
     /**
      * Spawn a new pipe at the right edge with random gap position.
+     * Creates varied vertical positions for more interesting gameplay.
      */
     private void spawnPipe() {
-        int gapY = Constants.PIPE_MIN_GAP_Y + 
-                   random.nextInt(Constants.PIPE_MAX_GAP_Y - Constants.PIPE_MIN_GAP_Y);
+        // Create more varied gap positions - divide screen into zones for better distribution
+        int range = Constants.PIPE_MAX_GAP_Y - Constants.PIPE_MIN_GAP_Y;
+        int zone = random.nextInt(5); // 5 different zones (high, mid-high, middle, mid-low, low)
+        int gapY;
+        
+        switch (zone) {
+            case 0: // High position
+                gapY = Constants.PIPE_MIN_GAP_Y + random.nextInt(range / 5);
+                break;
+            case 1: // Mid-high position
+                gapY = Constants.PIPE_MIN_GAP_Y + (range / 5) + random.nextInt(range / 5);
+                break;
+            case 2: // Middle position
+                gapY = Constants.PIPE_MIN_GAP_Y + (range * 2 / 5) + random.nextInt(range / 5);
+                break;
+            case 3: // Mid-low position
+                gapY = Constants.PIPE_MIN_GAP_Y + (range * 3 / 5) + random.nextInt(range / 5);
+                break;
+            default: // Low position
+                gapY = Constants.PIPE_MIN_GAP_Y + (range * 4 / 5) + random.nextInt(range / 5);
+                break;
+        }
+        
         pipes.add(new Pipe(Constants.WINDOW_WIDTH, gapY, Constants.PIPE_WIDTH, Constants.PIPE_GAP_HEIGHT));
     }
 
@@ -80,7 +102,7 @@ public class PipeManager {
 
     /**
      * Check collision between bird and any pipe.
-     * Uses proper AABB (Axis-Aligned Bounding Box) collision with small tolerance.
+     * More lenient collision - uses smaller collision box with padding.
      */
     public boolean checkCollision(Bird bird) {
         int birdX = bird.getX();
@@ -88,8 +110,8 @@ public class PipeManager {
         int birdWidth = bird.getWidth();
         int birdHeight = bird.getHeight();
         
-        // Add small padding to collision box for more forgiving collisions
-        int padding = 5;
+        // More lenient padding - bird collision box is smaller than visual (more forgiving)
+        int padding = 20; // Large padding for more forgiving collisions
         int birdLeft = birdX + padding;
         int birdRight = birdX + birdWidth - padding;
         int birdTop = birdY + padding;
@@ -98,20 +120,19 @@ public class PipeManager {
         for (Pipe pipe : pipes) {
             int pipeX = pipe.getX();
             int pipeWidth = pipe.getWidth();
+            int topPipeBottom = pipe.getTopPipeBottom();
+            int bottomPipeTop = pipe.getBottomPipeTop();
+            int groundY = Constants.WINDOW_HEIGHT - Constants.GROUND_HEIGHT;
 
-            // Check if bird is horizontally aligned with pipe (with padding)
+            // Check if bird is horizontally overlapping with pipe
             if (birdRight > pipeX && birdLeft < pipeX + pipeWidth) {
-                int topPipeBottom = pipe.getTopPipeBottom();
-                int bottomPipeTop = pipe.getBottomPipeTop();
-
-                // Check collision with top pipe (bird overlaps with pipe)
-                if (birdBottom > 0 && birdTop < topPipeBottom) {
+                // Check collision with top pipe - bird must be inside the top pipe solid area
+                if (birdTop < topPipeBottom && birdBottom > 0) {
                     return true;
                 }
                 
-                // Check collision with bottom pipe (bird overlaps with pipe)
-                int groundY = Constants.WINDOW_HEIGHT - Constants.GROUND_HEIGHT;
-                if (birdTop < groundY && birdBottom > bottomPipeTop) {
+                // Check collision with bottom pipe - bird must be inside the bottom pipe solid area
+                if (birdBottom > bottomPipeTop && birdTop < groundY) {
                     return true;
                 }
             }
