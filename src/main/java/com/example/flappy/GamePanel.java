@@ -3,6 +3,7 @@ package com.example.flappy;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -11,6 +12,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 
 /**
@@ -33,6 +35,8 @@ public class GamePanel extends JPanel {
         setDoubleBuffered(true);
         setBackground(Color.BLACK);
         setFocusable(true);
+        setPreferredSize(new Dimension(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
+        setLayout(null); // Use null layout for absolute positioning
         
         state = GameState.SELECT;
         score = 0;
@@ -61,6 +65,8 @@ public class GamePanel extends JPanel {
     private void setupSelectionPanel() {
         selectionPanel = new SelectionPanel();
         selectionPanel.setOnStartCallback(this::startGame);
+        selectionPanel.setBounds(0, 0, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        selectionPanel.setVisible(true);
         add(selectionPanel);
     }
 
@@ -126,7 +132,9 @@ public class GamePanel extends JPanel {
                     handleGameOverClick(e.getX(), e.getY());
                 }
             }
+        });
 
+        addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 if (state == GameState.GAME_OVER) {
@@ -246,15 +254,17 @@ public class GamePanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        
         if (state == GameState.SELECT) {
-            return; // Selection panel handles its own rendering
+            // Selection panel handles its own rendering
+            super.paintComponent(g);
+            return;
         }
+        
+        super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.KEY_ANTIALIASING_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Draw background
         if (background != null) {

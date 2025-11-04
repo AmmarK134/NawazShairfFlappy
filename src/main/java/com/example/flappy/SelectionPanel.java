@@ -2,6 +2,7 @@ package com.example.flappy;
 
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -24,7 +25,10 @@ public class SelectionPanel extends JPanel {
 
     public SelectionPanel() {
         setDoubleBuffered(true);
+        setOpaque(true);
         setBackground(Color.CYAN);
+        setPreferredSize(new Dimension(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT));
+        setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         loadAssets();
         setupMouseListener();
     }
@@ -88,10 +92,11 @@ public class SelectionPanel extends JPanel {
     }
 
     public BufferedImage getSelectedBirdSprite() {
-        if (selectedIndex >= 0 && selectedIndex < birdSprites.length) {
+        if (selectedIndex >= 0 && selectedIndex < birdSprites.length && birdSprites[selectedIndex] != null) {
             return birdSprites[selectedIndex];
         }
-        return birdSprites[0]; // Default to first bird
+        // Default to first bird if available, otherwise return null (game will handle it)
+        return birdSprites.length > 0 && birdSprites[0] != null ? birdSprites[0] : null;
     }
 
     @Override
@@ -99,7 +104,7 @@ public class SelectionPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.KEY_ANTIALIASING_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Draw background
         if (background != null) {
