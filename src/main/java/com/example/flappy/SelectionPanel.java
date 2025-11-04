@@ -48,12 +48,20 @@ public class SelectionPanel extends JPanel {
                 int x = e.getX();
                 int y = e.getY();
 
-                // Check bird selection
-                int startX = Constants.WINDOW_WIDTH / 2 - (BIRD_COUNT * 80) / 2;
+                // Check bird selection - use same coordinates as rendering
+                int thumbnailSize = 150;
+                int bird3Size = 180; // Bigger for bird3
+                int spacing = 200;
+                int startX = Constants.WINDOW_WIDTH / 2 - (BIRD_COUNT * spacing) / 2;
+                
                 for (int i = 0; i < BIRD_COUNT; i++) {
-                    int birdX = startX + i * 80;
-                    int birdY = Constants.WINDOW_HEIGHT / 2 - 40;
-                    if (x >= birdX && x < birdX + 60 && y >= birdY && y < birdY + 60) {
+                    // Use larger size for bird3 (same as rendering)
+                    int currentSize = (i == 2) ? bird3Size : thumbnailSize;
+                    int birdX = startX + i * spacing;
+                    int birdY = Constants.WINDOW_HEIGHT / 2 - currentSize / 2;
+                    
+                    // Check if click is within bird bounds
+                    if (x >= birdX && x < birdX + currentSize && y >= birdY && y < birdY + currentSize) {
                         selectedIndex = i;
                         repaint();
                         return;
@@ -123,48 +131,51 @@ public class SelectionPanel extends JPanel {
 
         // Draw bird options (larger thumbnails for bigger screen)
         int thumbnailSize = 150;
+        int bird3Size = 180; // Bigger for bird3
         int spacing = 200;
         int startX = Constants.WINDOW_WIDTH / 2 - (BIRD_COUNT * spacing) / 2;
         for (int i = 0; i < BIRD_COUNT; i++) {
+            // Use larger size for bird3
+            int currentSize = (i == 2) ? bird3Size : thumbnailSize;
             int birdX = startX + i * spacing;
-            int birdY = Constants.WINDOW_HEIGHT / 2 - thumbnailSize / 2;
+            int birdY = Constants.WINDOW_HEIGHT / 2 - currentSize / 2;
 
             // Highlight selected
             if (i == selectedIndex) {
                 g2d.setColor(new Color(255, 255, 0, 100));
-                g2d.fillOval(birdX - 10, birdY - 10, thumbnailSize + 20, thumbnailSize + 20);
+                g2d.fillOval(birdX - 10, birdY - 10, currentSize + 20, currentSize + 20);
             }
 
-            // Draw bird thumbnail maintaining aspect ratio - ensure all birds same max size
+            // Draw bird thumbnail maintaining aspect ratio
             if (birdSprites[i] != null) {
                 int spriteWidth = birdSprites[i].getWidth();
                 int spriteHeight = birdSprites[i].getHeight();
                 if (spriteWidth > 0 && spriteHeight > 0) {
-                    // Calculate dimensions maintaining aspect ratio, but fit within thumbnailSize
+                    // Calculate dimensions maintaining aspect ratio, but fit within currentSize
                     float aspectRatio = (float) spriteWidth / spriteHeight;
                     int thumbWidth, thumbHeight;
                     
                     if (aspectRatio > 1.0f) {
                         // Wider than tall
-                        thumbWidth = thumbnailSize;
-                        thumbHeight = (int) (thumbnailSize / aspectRatio);
+                        thumbWidth = currentSize;
+                        thumbHeight = (int) (currentSize / aspectRatio);
                     } else {
                         // Taller than wide or square
-                        thumbHeight = thumbnailSize;
-                        thumbWidth = (int) (thumbnailSize * aspectRatio);
+                        thumbHeight = currentSize;
+                        thumbWidth = (int) (currentSize * aspectRatio);
                     }
                     
                     // Center the thumbnail
-                    int thumbX = birdX + (thumbnailSize - thumbWidth) / 2;
-                    int thumbY = birdY + (thumbnailSize - thumbHeight) / 2;
+                    int thumbX = birdX + (currentSize - thumbWidth) / 2;
+                    int thumbY = birdY + (currentSize - thumbHeight) / 2;
                     g2d.drawImage(birdSprites[i], thumbX, thumbY, thumbWidth, thumbHeight, null);
                 } else {
-                    g2d.drawImage(birdSprites[i], birdX, birdY, thumbnailSize, thumbnailSize, null);
+                    g2d.drawImage(birdSprites[i], birdX, birdY, currentSize, currentSize, null);
                 }
             } else {
                 // Fallback colored rectangle
                 g2d.setColor(new Color(255, 165, 0));
-                g2d.fillRect(birdX, birdY, thumbnailSize, thumbnailSize);
+                g2d.fillRect(birdX, birdY, currentSize, currentSize);
             }
         }
 
