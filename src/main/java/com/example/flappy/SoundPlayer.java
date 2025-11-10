@@ -8,12 +8,15 @@ import java.util.Map;
 
 
 
+
+
+
+
+
 public class SoundPlayer {
     private static final Map<String, byte[]> soundBytes = new HashMap<>(); // cache raw bytes
     private static Clip bgClip = null;
     private static boolean soundsEnabled = true;
-
-    // ---------- Public API ----------
 
     public static void setSoundsEnabled(boolean enabled) {
         soundsEnabled = enabled;
